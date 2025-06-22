@@ -1,10 +1,20 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { DarkMode, LightMode } from "@mui/icons-material";
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 
-export default function NavBar() {
+type Props ={
+    toggleDarkMode: () => void;
+    darkMode: boolean;
+}
+
+export default function NavBar({darkMode, toggleDarkMode}: Props) {
+
     return (
         <AppBar position="fixed">
             <Toolbar>
                 <Typography variant="h6">Re-Store</Typography>
+                <IconButton onClick={toggleDarkMode}>
+                    {darkMode ? <DarkMode /> : <LightMode sx={{color: 'yellow'}}/>}
+                </IconButton>
             </Toolbar>
         </AppBar>
     )
