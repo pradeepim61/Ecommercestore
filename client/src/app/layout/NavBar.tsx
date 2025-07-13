@@ -1,6 +1,8 @@
 import { DarkMode, LightMode, ShoppingCart } from "@mui/icons-material";
-import { AppBar, Badge, Box, IconButton, List, ListItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { toggleDarkMode } from "./uiThemeMode";
 
 const midLinks = [
     { title: 'Catalog', path: '/catalog' },
@@ -16,19 +18,18 @@ const rightLinks = [
 
 const navStyles = { color: 'inherit', typography: 'h6', textDecoration: 'none', '&:hover': { color: 'grey.500' }, '&.active': { color: '#baedf9' } }
 
-type Props = {
-    toggleDarkMode: () => void;
-    darkMode: boolean;
-}
+export default function NavBar() {
 
-export default function NavBar({ darkMode, toggleDarkMode }: Props) {
+    const isLoading = useAppSelector(state => state.ui.isLoading);
+    const darkMode = useAppSelector(state => state.uiThemeMode.darkMode);
+    const dispatch = useAppDispatch();
 
     return (
         <AppBar position="fixed">
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between',  alignItems: 'center'}}>
-                <Box  sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography component={NavLink} to='/' sx={navStyles} variant="h6">Re-Store</Typography>
-                    <IconButton onClick={toggleDarkMode}>
+                    <IconButton onClick={() => dispatch(toggleDarkMode())}>
                         {darkMode ? <DarkMode /> : <LightMode sx={{ color: 'yellow' }} />}
                     </IconButton>
                 </Box>
@@ -70,6 +71,11 @@ export default function NavBar({ darkMode, toggleDarkMode }: Props) {
                 </Box>
 
             </Toolbar>
+            {isLoading && (
+                <Box sx={{ width: '100%' }}>
+                    <LinearProgress color="secondary"/>
+                </Box>
+            )}
         </AppBar>
     )
 }

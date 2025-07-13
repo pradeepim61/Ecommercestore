@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { Product } from "../../app/models/product";
 import { Button, Divider, Grid2, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from "@mui/material";
+import { useFetchProductDetailsQuery } from "./catalogApi";
 
 export default function ProductDetails() {
     const { id } = useParams<{ id: string }>();
-    const [product, setProduct] = useState<Product | null>(null);
 
-    useEffect(() => {
-        fetch(`https://localhost:5001/api/products/${id}`)
-            .then(response => response.json())
-            .then(data => setProduct(data))
-            .catch(error => console.error('Error fetching product:', error));
-    }, [id])
+    const { data: product, isLoading } = useFetchProductDetailsQuery(id ? parseInt(id!) : 0);
+    // const [product, setProduct] = useState<Product | null>(null);
+
+    // useEffect(() => {
+    //     fetch(`https://localhost:5001/api/products/${id}`)
+    //         .then(response => response.json())
+    //         .then(data => setProduct(data))
+    //         .catch(error => console.error('Error fetching product:', error));
+    // }, [id])
+
+    if (!product || isLoading) return <h2>Loading...</h2>;
 
     const productDetails = [
         { label: 'Name', value: product?.name },
@@ -21,9 +24,6 @@ export default function ProductDetails() {
         { label: 'Type', value: product?.type },
         { label: 'Quantity in Stock', value: product?.quantityStock }
     ]
-
-
-    if (!product) return <h2>Loading...</h2>;
 
     return (
         <Grid2 container spacing={6} maxWidth='lg' justifyContent="center">
