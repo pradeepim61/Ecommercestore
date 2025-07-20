@@ -31,7 +31,7 @@ export default function AboutPage() {
         <div>
             <Container maxWidth="lg">
                 <Typography gutterBottom variant="h3">Errors for testing</Typography>
-                <ButtonGroup>
+                <ButtonGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Button variant="contained" onClick={() => trigger400Error().catch((err: unknown) => console.log(err))}>
                         Test 400 Error</Button>
                     <Button variant="contained" onClick={() => trigger401Error().catch((err: unknown) => console.log(err))}>
