@@ -1,12 +1,13 @@
 import { DarkMode, LightMode, ShoppingCart, Menu } from "@mui/icons-material";
 import { 
-  AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem, 
-  Toolbar, Typography, Drawer, useMediaQuery, Theme 
+AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem, 
+Toolbar, Typography, Drawer, useMediaQuery, Theme 
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { toggleDarkMode } from "./uiThemeMode";
 import { useState } from "react";
+import { useFetchBasketQuery } from "../../features/basket/basketApi";
 
 const midLinks = [
     { title: 'Catalog', path: '/catalog' },
@@ -32,7 +33,10 @@ export default function NavBar() {
     const isLoading = useAppSelector(state => state.ui.isLoading);
     const darkMode = useAppSelector(state => state.uiThemeMode.darkMode);
     const dispatch = useAppDispatch();
+    const {data: basket} = useFetchBasketQuery();
     
+    const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     const handleDrawerToggle = () => {
@@ -107,7 +111,7 @@ export default function NavBar() {
                 {!isMobile && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <IconButton size="large">
-                            <Badge badgeContent={4} color="secondary">
+                            <Badge component={Link} to='/basket' badgeContent={itemCount} color="secondary">
                                 <ShoppingCart />
                             </Badge>
                         </IconButton>
@@ -130,7 +134,7 @@ export default function NavBar() {
                 {/* Mobile - Show cart icon */}
                 {isMobile && (
                     <IconButton size="large">
-                        <Badge badgeContent={4} color="secondary">
+                        <Badge component={Link} to='/basket' badgeContent={itemCount} color="secondary">
                             <ShoppingCart />
                         </Badge>
                     </IconButton>

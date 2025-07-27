@@ -5,6 +5,7 @@ import { catalogApi } from "../../features/catalog/catalogApi";
 import { uiSlice } from "../layout/uiSlice";
 import { uiThemeMode } from "../layout/uiThemeMode";
 import { errorApi } from "../../features/about/errorApi";
+import { basketApi } from "../../features/basket/basketApi";
 
 export function configureTheStore() {
     return legacy_createStore(counterReducer)
@@ -14,12 +15,13 @@ export const store = configureStore({
     reducer:{
         [catalogApi.reducerPath]: catalogApi.reducer,
         [errorApi.reducerPath]: errorApi.reducer,
+        [basketApi.reducerPath]: basketApi.reducer,
         counter: counterSlice.reducer,
         ui : uiSlice.reducer,
         uiThemeMode: uiThemeMode.reducer
     },
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(catalogApi.middleware, errorApi.middleware)
+        getDefaultMiddleware().concat(catalogApi.middleware, errorApi.middleware, basketApi.middleware)
 });
 
 // Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself

@@ -1,14 +1,14 @@
 import { Box, Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material"
 import NavBar from "./NavBar"
 import { Outlet } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { getInitialDarkMode } from "./uiThemeMode";
+import { useAppSelector } from "../store/store";
+//import { getInitialDarkMode } from "./uiThemeMode";
 
 function App() {
 
   const {darkMode} = useAppSelector(state => state.uiThemeMode);
-  const dispatch = useAppDispatch();
-  dispatch(getInitialDarkMode());
+  //const dispatch = useAppDispatch();
+  //dispatch(getInitialDarkMode());
   
   const palletteType = darkMode ? 'dark' : 'light';
 
