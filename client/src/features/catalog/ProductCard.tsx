@@ -2,6 +2,7 @@ import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@
 import type { Product } from "../../app/models/product"
 import { Link } from "react-router-dom"
 import { useAddBasketItemMutation } from "../basket/basketApi"
+import { currencyFormat } from "../../lib/util"
 
 type props = {
     product: Product
@@ -20,7 +21,7 @@ export default function ProductCard({ product }: props) {
             />
             <CardContent>
                 <Typography gutterBottom sx={{ textTransform: 'uppercase' }} variant="subtitle2">{product.name}</Typography>
-                <Typography variant="h6" sx={{ color: 'secondary.main' }}>${(product.price / 100).toFixed(2)}</Typography>
+                <Typography variant="h6" sx={{ color: 'secondary.main' }}>{currencyFormat(product.price)}</Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: 'space-between' }}>
                 <Button disabled={isLoading} onClick={() => addBasketItem({product: product, quantity: 1})} variant="contained" >Add to Cart</Button>
