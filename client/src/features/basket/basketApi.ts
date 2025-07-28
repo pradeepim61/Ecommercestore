@@ -28,18 +28,24 @@ export const basketApi = createApi({
             //invalidatesTags: ['Basket'],
             //optimistic updates.
             onQueryStarted: async ({ product, quantity }, { dispatch, queryFulfilled }) => {
+                let isNewBasket = false;
                 const patchresult = dispatch(
                     basketApi.util.updateQueryData('fetchBasket', undefined, (draftBasket) => {
                         const productId = isBasketItem(product) ? product.productId : product.id;
-                        
-                        const existingItem = draftBasket.items.find(item => item.productId === productId);
-                        if (existingItem) existingItem.quantity += quantity;
-                        else draftBasket.items.push(isBasketItem(product) ? product : new Item(product, quantity));
+
+                        if (!draftBasket?.basketId) isNewBasket = true;
+
+                        if (!isNewBasket) {
+                            const existingItem = draftBasket.items.find(item => item.productId === productId);
+                            if (existingItem) existingItem.quantity += quantity;
+                            else draftBasket.items.push(isBasketItem(product) ? product : { ...product, productId: product.id, quantity });
+                        }
+
                     })
                 )
                 try {
                     await queryFulfilled;
-                    //dispatch(basketApi.util.invalidateTags(['Basket']));
+                    if(isNewBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
                 }
                 catch (error) {
                     console.error("Error adding item to basket:", error);
