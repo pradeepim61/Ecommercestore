@@ -24,10 +24,10 @@ public static class ProductExtensions
 
     public static IQueryable<Product> FilterByBrand(this IQueryable<Product> query, string? brands, string? types)
     {
-        if (string.IsNullOrEmpty(brands)) return query;
+        if (string.IsNullOrEmpty(brands) && string.IsNullOrEmpty(types)) return query;
 
-        var brandList = brands.ToLower().Split(",").ToList();
-        var typeList = types?.ToLower().Split(",").ToList();
+        var brandList = brands?.Split(",").ToList();
+        var typeList = types?.Split(",").ToList();
 
         if (typeList != null && typeList.Count != 0)
         {

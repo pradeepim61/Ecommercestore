@@ -1,6 +1,6 @@
 import { Box, Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material"
 import NavBar from "./NavBar"
-import { Outlet } from "react-router-dom"
+import { Outlet, ScrollRestoration } from "react-router-dom"
 import { useAppSelector } from "../store/store";
 //import { getInitialDarkMode } from "./uiThemeMode";
 
@@ -25,6 +25,7 @@ function App() {
   return (
     <>
       <ThemeProvider theme={darkTheme}>
+        <ScrollRestoration />
         <CssBaseline />
         <NavBar   />
         <Box sx={{minHeight: '100vh', background: darkMode ? 'radial-gradient(circle, #1e3aBa, #111B27)' : 
