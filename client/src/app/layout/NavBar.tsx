@@ -1,13 +1,15 @@
-import { DarkMode, LightMode, ShoppingCart, Menu } from "@mui/icons-material";
-import { 
-AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem, 
-Toolbar, Typography, Drawer, useMediaQuery, Theme 
+import { DarkMode, LightMode, ShoppingCart, Menu, Home } from "@mui/icons-material";
+import {
+    AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem,
+    Toolbar, Typography, Drawer, useMediaQuery, Theme
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { toggleDarkMode } from "./uiThemeMode";
 import { useState } from "react";
-import { useFetchBasketQuery } from "../../features/basket/basketApi";
+import { useLazyFetchBasketQuery } from "../../features/basket/basketApi";
+import UserMenu from "./UserMenu";
+import { useUserInfoQuery } from "../../features/account/accountApi";
 
 const midLinks = [
     { title: 'Catalog', path: '/catalog' },
@@ -20,23 +22,26 @@ const rightLinks = [
     { title: 'Register', path: '/register' },
 ];
 
-const navStyles = { 
-    color: 'inherit', 
-    typography: 'h6', 
-    textDecoration: 'none', 
-    '&:hover': { color: 'grey.500' }, 
-    '&.active': { color: '#baedf9' } 
+const navStyles = {
+    color: 'inherit',
+    typography: 'h6',
+    textDecoration: 'none',
+    '&:hover': { color: 'grey.500' },
+    '&.active': { color: '#baedf9' }
 };
 
 export default function NavBar() {
+    const {data: user} = useUserInfoQuery();
+    console.log(user ? Object.values(user).join('--') : 'No user');
     const [mobileOpen, setMobileOpen] = useState(false);
     const isLoading = useAppSelector(state => state.ui.isLoading);
     const darkMode = useAppSelector(state => state.uiThemeMode.darkMode);
     const dispatch = useAppDispatch();
-    const {data: basket} = useFetchBasketQuery();
-    
-    const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    const [, { data: basket }] = useLazyFetchBasketQuery();
 
+    const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    console.log(itemCount);
+    
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     const handleDrawerToggle = () => {
@@ -45,44 +50,61 @@ export default function NavBar() {
 
     const drawer = (
         <Box sx={{ textAlign: 'center', width: 250 }}>
-            <List>
-                {[...midLinks, ...rightLinks].map(({ title, path }) => (
-                    <ListItem 
-                        component={NavLink}
-                        to={path}
-                        key={path}
-                        sx={navStyles}
-                        onClick={() => setMobileOpen(false)}
-                    >
-                        {title.toUpperCase()}
-                    </ListItem>
-                ))}
-            </List>
+            {user ? (
+                <List>
+                    {[...midLinks].map(({ title, path }) => (
+                        <ListItem
+                            component={NavLink}
+                            to={path}
+                            key={path}
+                            sx={navStyles}
+                            onClick={() => setMobileOpen(false)}
+                        >
+                            {title.toUpperCase()}
+                        </ListItem>
+                    ))}
+                </List>
+            ) : (
+                <List>
+                    {[...midLinks, ...rightLinks].map(({ title, path }) => (
+                        <ListItem
+                            component={NavLink}
+                            to={path}
+                            key={path}
+                            sx={navStyles}
+                            onClick={() => setMobileOpen(false)}
+                        >
+                            {title.toUpperCase()}
+                        </ListItem>
+                    ))}
+                </List>
+            )}
         </Box>
     );
 
     return (
         <AppBar position="fixed">
-            <Toolbar sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center' 
+            <Toolbar sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
             }}>
                 {/* Left Section - Brand & Dark Mode Toggle */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {isMobile && (
                         <IconButton
                             color="inherit"
                             aria-label="open drawer"
                             edge="start"
                             onClick={handleDrawerToggle}
-                            sx={{ mr: 2 }}
                         >
                             <Menu />
                         </IconButton>
                     )}
                     <Typography component={NavLink} to='/' sx={navStyles} variant="h6">
-                        Re-Store
+                        <IconButton>
+                            <Home/>
+                        </IconButton>
                     </Typography>
                     <IconButton onClick={() => dispatch(toggleDarkMode())}>
                         {darkMode ? <DarkMode /> : <LightMode sx={{ color: 'yellow' }} />}
@@ -107,15 +129,17 @@ export default function NavBar() {
                     </Box>
                 )}
 
-                {/* Right Section - Cart & Auth Links */}
-                {!isMobile && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <IconButton size="large">
-                            <Badge component={Link} to='/basket' badgeContent={itemCount} color="secondary">
-                                <ShoppingCart />
-                            </Badge>
-                        </IconButton>
+                {/* Right Section - Always show cart, conditionally show user menu or auth links */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <IconButton size="large">
+                        <Badge component={Link} to='/basket' badgeContent={itemCount} color="secondary">
+                            <ShoppingCart />
+                        </Badge>
+                    </IconButton>
 
+                    {user ? (
+                        <UserMenu user={user} />
+                    ) : !isMobile ? (
                         <List sx={{ display: 'flex' }}>
                             {rightLinks.map(({ title, path }) => (
                                 <ListItem
@@ -128,23 +152,15 @@ export default function NavBar() {
                                 </ListItem>
                             ))}
                         </List>
-                    </Box>
-                )}
+                    ) : null}
 
-                {/* Mobile - Show cart icon */}
-                {isMobile && (
-                    <IconButton size="large">
-                        <Badge component={Link} to='/basket' badgeContent={itemCount} color="secondary">
-                            <ShoppingCart />
-                        </Badge>
-                    </IconButton>
-                )}
+                </Box>
             </Toolbar>
 
             {/* Loading Indicator */}
             {isLoading && (
                 <Box sx={{ width: '100%' }}>
-                    <LinearProgress color="secondary"/>
+                    <LinearProgress color="secondary" />
                 </Box>
             )}
 
@@ -154,10 +170,10 @@ export default function NavBar() {
                 open={mobileOpen}
                 onClose={handleDrawerToggle}
                 ModalProps={{
-                    keepMounted: true, // Better open performance on mobile
+                    keepMounted: true,
                 }}
                 sx={{
-                    '& .MuiDrawer-paper': { 
+                    '& .MuiDrawer-paper': {
                         boxSizing: 'border-box',
                         backgroundColor: darkMode ? '#121212' : '#1976d2',
                         color: 'white'

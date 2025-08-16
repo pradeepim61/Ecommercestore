@@ -38,6 +38,8 @@ export const baseQueryWithErrorHandling = async (args: string | FetchArgs, api: 
                 else toast.error(reponseData.title);
                 break;
             case 401:
+                  // Clear user data on unauthorized
+                //api.dispatch(accountApi.util.updateQueryData('userInfo', undefined, () => undefined));
                 if (typeof reponseData === 'object' && 'title' in reponseData)
                     toast.error(reponseData.title);
                 else toast.error('unauthorized');

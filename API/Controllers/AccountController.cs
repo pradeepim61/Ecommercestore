@@ -30,7 +30,6 @@ namespace API.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpGet("user-info")]
         public async Task<ActionResult> GetUserInfo()
         {
