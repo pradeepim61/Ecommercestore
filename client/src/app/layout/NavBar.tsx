@@ -1,13 +1,13 @@
 import { DarkMode, LightMode, ShoppingCart, Menu, Home } from "@mui/icons-material";
 import {
     AppBar, Badge, Box, IconButton, LinearProgress, List, ListItem,
-    Toolbar, Typography, Drawer, useMediaQuery, Theme
+    Toolbar, Typography, Drawer, useMediaQuery, type Theme
 } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { toggleDarkMode } from "./uiThemeMode";
 import { useState } from "react";
-import { useLazyFetchBasketQuery } from "../../features/basket/basketApi";
+import { useFetchBasketQuery } from "../../features/basket/basketApi";
 import UserMenu from "./UserMenu";
 import { useUserInfoQuery } from "../../features/account/accountApi";
 
@@ -37,11 +37,11 @@ export default function NavBar() {
     const isLoading = useAppSelector(state => state.ui.isLoading);
     const darkMode = useAppSelector(state => state.uiThemeMode.darkMode);
     const dispatch = useAppDispatch();
-    const [, { data: basket }] = useLazyFetchBasketQuery();
+    const { data: basket } = useFetchBasketQuery();
 
     const itemCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
     console.log(itemCount);
-    
+
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
     const handleDrawerToggle = () => {

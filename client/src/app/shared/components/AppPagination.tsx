@@ -1,4 +1,4 @@
-import { Box, Pagination, Typography } from "@mui/material";
+import { Grid2, Pagination, Typography } from "@mui/material";
 import type { Pagination as PaginationType } from "../../models/pagination";
 
 type Props = {
@@ -13,12 +13,17 @@ export default function AppPagination({ metaData, onPageChange }: Props) {
     const endItem = Math.min(currentPage * pageSize, totalCount);
 
     return (
-        <Box display='flex' justifyContent='space-between' alignItems='center' marginTop={3}>
-            <Typography>
-                Displaying {startItem}- {endItem} of {totalCount} items
-            </Typography>
-            <Pagination color="secondary" size="large" count={totalPages} page={currentPage} onChange={(_, page) => onPageChange(page)}>
-            </Pagination>
-        </Box>
+        <Grid2 container display='flex' justifyContent='space-between' alignItems='center' sx={{ marginTop: 3 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', mb: { xs: 2, sm: 0 } }} >
+                <Typography>
+                    Displaying {startItem}- {endItem} of {totalCount} items
+                </Typography>
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}>
+                <Pagination color="secondary" size="large" count={totalPages} page={currentPage} onChange={(_, page) => onPageChange(page)}>
+                </Pagination>
+            </Grid2>
+        </Grid2>
+
     )
 }

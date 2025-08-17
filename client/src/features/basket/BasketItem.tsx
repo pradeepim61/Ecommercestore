@@ -88,7 +88,7 @@ export default function BasketItem({ item }: Props) {
                         </Typography>
                     </Box>
 
-                    <Box display='flex' justifyContent='center' alignItems='center' gap={2} mt={1}>
+                    <Box display='flex' justifyContent= {isSmallScreen ? 'center' : 'flex-start'} alignItems='center' gap={2} mt={1}>
                         <IconButton 
                             onClick={() => removeBasketItem({productId: item.productId, quantity: 1})} 
                             color="error" 
