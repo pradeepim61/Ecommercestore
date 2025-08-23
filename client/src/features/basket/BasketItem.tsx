@@ -74,6 +74,7 @@ export default function BasketItem({ item }: Props) {
                     gap={1} 
                     width={isSmallScreen ? '100%' : 'auto'}
                     px={isSmallScreen ? 2 : 0}
+                    flexGrow={1}  // Added to ensure consistent growth
                 >
                     <Typography variant="h6" textAlign={isSmallScreen ? 'center' : 'left'}>
                         {item.name}

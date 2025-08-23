@@ -11,6 +11,9 @@ public class Basket
 
     private readonly object _lock = new object();
 
+    public string? ClientSecret { get; set; }
+    public string? PaymentIntentId { get; set; }
+
     public void AddItem(Product product, int quantity)
     {
         lock (_lock)
@@ -47,7 +50,7 @@ public class Basket
         item.Quantity -= quantity;
 
         if (item.Quantity <= 0) Items.Remove(item);
-        
+
     }
 
     private BasketItem? FindItem(int productId)
