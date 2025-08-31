@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "../../app/api/baseApi";
 import { Item, type Basket } from "../../app/models/basket";
 import type { Product } from "../../app/models/product";
+import Cookies from "js-cookie";
 
 function isBasketItem(product: Product | Item): product is Item {
     return (product as Item).productId !== undefined;
@@ -45,7 +46,7 @@ export const basketApi = createApi({
                 )
                 try {
                     await queryFulfilled;
-                    if(isNewBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
+                    if (isNewBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
                 }
                 catch (error) {
                     console.error("Error adding item to basket:", error);
@@ -84,13 +85,15 @@ export const basketApi = createApi({
             }
         }),
         clearBasket: builder.mutation<void, void>({
-            query: () => ({
-                url: 'basket',
-                method: 'DELETE'
-            }),
-            invalidatesTags: ['Basket']
+            queryFn: () => ({ data: undefined }),
+            onQueryStarted: async (_, { dispatch }) => {
+                dispatch(basketApi.util.updateQueryData('fetchBasket', undefined, (draft) => {
+                    draft.items = [];
+                }));
+                Cookies.remove('basketId')
+            }
         })
     })
 });
 
-export const { useFetchBasketQuery, useAddBasketItemMutation, useRemoveBasketItemMutation, useLazyFetchBasketQuery } = basketApi;
+export const { useFetchBasketQuery, useAddBasketItemMutation, useRemoveBasketItemMutation, useLazyFetchBasketQuery, useClearBasketMutation } = basketApi;
