@@ -36,7 +36,10 @@ export default function CheckoutPage() {
 
     return (
         <Grid2 container spacing={2}>
-            <Grid2 size={8}>
+            <Grid2 size={{xs: 12, md: 4}}>
+                <OrderSummary></OrderSummary>
+            </Grid2>
+            <Grid2 size={{xs: 12, md: 8}}>
                 {!stripePromise || !options || isLoading ? (
                     <Typography variant="h6" >Loading checkout...</Typography>
                 ) : (
@@ -45,9 +48,6 @@ export default function CheckoutPage() {
                     </Elements>
                 )}
             </Grid2 >
-            <Grid2 size={4}>
-                <OrderSummary></OrderSummary>
-            </Grid2>
         </Grid2 >
     )
 }
