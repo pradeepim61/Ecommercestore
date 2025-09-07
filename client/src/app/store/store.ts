@@ -9,6 +9,7 @@ import { basketApi } from "../../features/basket/basketApi";
 import { catalogSlice } from "../../features/catalog/catalogSlice";
 import { accountApi } from "../../features/account/accountApi";
 import { checkoutApi } from "../../features/checkout/checkoutApi";
+import { orderApi } from "../../features/orders/orderApi";
 
 export function configureTheStore() {
     return legacy_createStore(counterReducer)
@@ -21,13 +22,14 @@ export const store = configureStore({
         [basketApi.reducerPath]: basketApi.reducer,
         [accountApi.reducerPath]: accountApi.reducer,
         [checkoutApi.reducerPath]: checkoutApi.reducer,
+        [orderApi.reducerPath]: orderApi.reducer,
         counter: counterSlice.reducer,
         ui : uiSlice.reducer,
         uiThemeMode: uiThemeMode.reducer,
         catalog: catalogSlice.reducer
     },
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(catalogApi.middleware, errorApi.middleware, basketApi.middleware, accountApi.middleware, checkoutApi.middleware)
+        getDefaultMiddleware().concat(catalogApi.middleware, errorApi.middleware, basketApi.middleware, accountApi.middleware, checkoutApi.middleware, orderApi.middleware)
 });
 
 // Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself
