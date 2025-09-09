@@ -20,4 +20,9 @@ public class Order
     {
         return Subtotal + DeliveryFee - Discount;
     }
+
+    public static implicit operator Task<object>(Order v)
+    {
+        throw new NotImplementedException();
+    }
 }
