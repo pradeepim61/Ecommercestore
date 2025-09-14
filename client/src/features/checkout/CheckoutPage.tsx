@@ -25,9 +25,9 @@ export default function CheckoutPage() {
         if (basket?.clientSecret) {
             return {
                 clientSecret: basket.clientSecret,
-                appearance:{
+                appearance: {
                     labels: 'floating',
-                    theme:  darkMode ? 'night' : 'stripe'
+                    theme: darkMode ? 'night' : 'stripe'
                 }
             }
         }
@@ -36,19 +36,26 @@ export default function CheckoutPage() {
 
     return (
         <Grid2 container spacing={2}>
-            <Grid2 size={{xs: 12, md: 4}}>
-                <OrderSummary></OrderSummary>
-            </Grid2>
-            <Grid2 size={{xs: 12, md: 8}}>
-                {!stripePromise || !options || isLoading ? (
-                    <Typography variant="h6" >Loading checkout...</Typography>
-                ) : (
-                    <Elements stripe={stripePromise}  options={options} >
-                        <CheckoutStepper></CheckoutStepper>
-                    </Elements>
-                )}
-            </Grid2 >
-        </Grid2 >
+            {!basket || basket.items.length === 0 ? (
+                <Typography variant="h5" sx={{ m: 2 }} ><em>Your basket is empty</em></Typography>
+            ) : (
+                <>
+                    <Grid2 size={{ xs: 12, md: 4 }}>
+                        <OrderSummary></OrderSummary>
+                    </Grid2>
+                    <Grid2 size={{ xs: 12, md: 8 }}>
+                        {!stripePromise || !options || isLoading ? (
+                            <Typography variant="h6" >Loading checkout...</Typography>
+                        ) : (
+                            <Elements stripe={stripePromise} options={options} >
+                                <CheckoutStepper></CheckoutStepper>
+                            </Elements>
+                        )}
+                    </Grid2 >
+                </>
+
+            )}
+        </Grid2>
     )
 }
 

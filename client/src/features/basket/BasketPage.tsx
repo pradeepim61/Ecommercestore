@@ -8,7 +8,7 @@ export default function BasketPage() {
 
     if (isLoading) return <div>Loading...</div>;
 
-    if (!data) return <div>No items in the basket</div>;
+    if (!data || data.items.length === 0) return <div>No items in the basket</div>;
 
     return (
 

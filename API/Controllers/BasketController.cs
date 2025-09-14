@@ -15,9 +15,7 @@ namespace API.Controllers
         {
             var basket = await RetrieveBasket();
 
-            if (basket == null) return NotFound();
-
-            return basket.ToDto();
+            return basket?.ToDto() ?? BasketDto.Empty();
         }
 
         [HttpPost]

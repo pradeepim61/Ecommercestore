@@ -11,4 +11,15 @@ public class BasketDto
 
     public string? ClientSecret { get; set; }
     public string? PaymentIntentId { get; set; }
+
+    public static BasketDto Empty()
+    {
+        return new BasketDto
+        {
+            BasketId = string.Empty,
+            Items = new List<BasketItemDto>(),
+            PaymentIntentId = null,
+            ClientSecret = null
+        };
+    }
 }

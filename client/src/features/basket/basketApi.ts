@@ -26,27 +26,42 @@ export const basketApi = createApi({
                     method: 'POST'
                 }
             },
-            //invalidatesTags: ['Basket'],
-            //optimistic updates.
+            // Optimistic updates with proper handling for empty baskets
             onQueryStarted: async ({ product, quantity }, { dispatch, queryFulfilled }) => {
-                let isNewBasket = false;
                 const patchresult = dispatch(
                     basketApi.util.updateQueryData('fetchBasket', undefined, (draftBasket) => {
                         const productId = isBasketItem(product) ? product.productId : product.id;
 
-                        if (!draftBasket?.basketId) isNewBasket = true;
-
-                        if (!isNewBasket) {
-                            const existingItem = draftBasket.items.find(item => item.productId === productId);
-                            if (existingItem) existingItem.quantity += quantity;
-                            else draftBasket.items.push(isBasketItem(product) ? product : { ...product, productId: product.id, quantity });
+                        // Handle case where basket might be empty or undefined
+                        if (!draftBasket || !draftBasket.items) {
+                            // Create a new basket structure if it doesn't exist
+                            const newBasket: Basket = {
+                                basketId: '', // This will be set by the server response
+                                items: [isBasketItem(product) ? product : { 
+                                    ...product, 
+                                    productId: product.id, 
+                                    quantity 
+                                }]
+                            };
+                            return newBasket;
                         }
 
+                        const existingItem = draftBasket.items.find(item => item.productId === productId);
+                        if (existingItem) {
+                            existingItem.quantity += quantity;
+                        } else {
+                            draftBasket.items.push(isBasketItem(product) ? product : { 
+                                ...product, 
+                                productId: product.id, 
+                                quantity 
+                            });
+                        }
                     })
                 )
                 try {
                     await queryFulfilled;
-                    if (isNewBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
+                    // Always invalidate to ensure sync with server
+                    dispatch(basketApi.util.invalidateTags(['Basket']));
                 }
                 catch (error) {
                     console.error("Error adding item to basket:", error);
@@ -59,10 +74,12 @@ export const basketApi = createApi({
                 url: `basket?productId=${productId}&quantity=${quantity}`,
                 method: 'DELETE'
             }),
-            //invalidatesTags: ['Basket'],
             onQueryStarted: async ({ productId, quantity }, { dispatch, queryFulfilled }) => {
                 const patchresult = dispatch(
                     basketApi.util.updateQueryData('fetchBasket', undefined, (draftBasket) => {
+                        // Handle case where basket might be empty
+                        if (!draftBasket || !draftBasket.items) return;
+                        
                         const itemIndex = draftBasket.items.findIndex(item => item.productId === productId);
                         if (itemIndex !== -1) {
                             const existingItem = draftBasket.items[itemIndex];
@@ -76,7 +93,8 @@ export const basketApi = createApi({
                 )
                 try {
                     await queryFulfilled;
-                    //dispatch(basketApi.util.invalidateTags(['Basket']));
+                    // Invalidate to ensure sync with server
+                    dispatch(basketApi.util.invalidateTags(['Basket']));
                 }
                 catch (error) {
                     console.error("Error deleting item from basket:", error);
@@ -88,10 +106,15 @@ export const basketApi = createApi({
             queryFn: () => ({ data: undefined }),
             onQueryStarted: async (_, { dispatch }) => {
                 dispatch(basketApi.util.updateQueryData('fetchBasket', undefined, (draft) => {
-                    draft.items = [];
-                    draft.basketId = '';
+                    if (draft) {
+                        draft.items = [];
+                        draft.basketId = '';
+                    }
                 }));
-                Cookies.remove('basketId')
+                Cookies.remove('basketId');
+                
+                // Invalidate the basket query to force refetch
+                dispatch(basketApi.util.invalidateTags(['Basket']));
             }
         })
     })
