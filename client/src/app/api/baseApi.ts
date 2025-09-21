@@ -14,10 +14,12 @@ const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 export const baseQueryWithErrorHandling = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: object) => {
     api.dispatch(startLoading());
-    await sleep(); // Simulate network delay
+     if(import.meta.env.DEV) await sleep(); // Simulate network delay
     const result = await customBaseQuery(args, api, extraOptions);
 
     api.dispatch(stopLoading());
+
+
     if (result.error) {
         // Handle error here, e.g., log it or show a notification
         console.log('API Error:', result.error);
